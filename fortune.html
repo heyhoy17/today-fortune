@@ -251,7 +251,33 @@ html, body {
       <div class="tags-row" id="tags-row"></div>
     </div>
 
+    <!-- 연간 운세 -->
+    <div class="fortune-card" id="yearly-card" style="display:none;">
+      <div style="font-size:15px;font-weight:700;color:#111;margin-bottom:16px;">2026년 연간 운세</div>
+      <div class="fortune-section">
+        <div class="fortune-section-title">올해의 전체 흐름</div>
+        <div class="fortune-section-text" id="y-general"></div>
+      </div>
+      <div class="fortune-section">
+        <div class="fortune-section-title">상반기 (1~6월)</div>
+        <div class="fortune-section-text" id="y-first"></div>
+      </div>
+      <div class="fortune-section">
+        <div class="fortune-section-title">하반기 (7~12월)</div>
+        <div class="fortune-section-text" id="y-second"></div>
+      </div>
+      <div class="fortune-section">
+        <div class="fortune-section-title">올해 조심할 것</div>
+        <div class="fortune-section-text" id="y-careful"></div>
+      </div>
+      <div class="fortune-section">
+        <div class="fortune-section-title">올해의 키워드</div>
+        <div class="fortune-section-text" id="y-keyword"></div>
+      </div>
+    </div>
+
     <button class="reset-btn" id="reset-btn">다시 보기</button>
+    <button class="reset-btn" id="yearly-btn" style="margin-top:10px;background:#fff;color:#111;border:2px solid #111;">2026년 운세 보기</button>
   </div>
 
 </div>
@@ -495,6 +521,83 @@ function generateFortune(saju, todayGZ, gender, year, month, day) {
 // ==========================================
 // 메인 함수
 // ==========================================
+// ==========================================
+// 연간 운세 생성 (2026년 병오년 기준)
+// ==========================================
+function generateYearlyFortune(saju, year, month, day) {
+  var dayGan = saju.day[0];
+  var yearGan = saju.year[0];
+
+  var myNature = GAN_NATURE[dayGan] || { elem: '토', trait: '안정적인' };
+  var myYearNature = GAN_NATURE[yearGan] || { elem: '토' };
+
+  // 2026년 병오(丙午)년 - 화(火) 기운
+  var yearElem = '화';
+  var dayRelation = getElemRelation(myNature.elem, yearElem);
+  var yearRelation = getElemRelation(myYearNature.elem, yearElem);
+
+  var seed = (year * 41 + month * 19 + day * 13 + 2026) % 997;
+
+  var generalTexts = {
+    good: [
+      '2026년 병오년은 당신에게 활기차고 역동적인 한 해가 될 거예요. 새로운 도전을 두려워하지 않고 앞으로 나아갈 때 좋은 결실을 맺을 수 있어요. 올해는 그동안 준비해온 것들이 빛을 발하는 시기랍니다.',
+      '올해는 당신의 열정과 추진력이 극대화되는 한 해예요. 하고 싶었던 일을 시작하기에 더없이 좋은 타이밍이에요. 주변의 응원과 지지도 풍성하게 따라올 거예요.'
+    ],
+    bad: [
+      '2026년 병오년은 에너지가 강한 해라 자칫 무리하기 쉬운 시기예요. 페이스 조절이 중요하고, 충동적인 결정보다 신중한 판단이 더 빛나는 한 해예요. 내실을 다지는 데 집중하면 내년에 큰 도약이 기다리고 있어요.',
+      '올해는 겉보다 안을 채우는 시기예요. 화려한 움직임보다 꾸준한 노력이 나중에 더 큰 보상으로 돌아올 거예요. 무리하지 않는 것이 가장 좋은 전략이에요.'
+    ],
+    neutral: [
+      '2026년은 안정 속에서 조금씩 성장해가는 한 해가 될 거예요. 크게 치우치지 않고 균형을 유지하면서 나만의 속도로 나아가는 것이 중요해요. 올해 심은 씨앗이 내년에 싹을 틔울 거예요.',
+      '올해는 기복 없이 꾸준한 흐름이 이어지는 해예요. 평범한 하루하루가 쌓여 단단한 기반이 만들어지는 시기랍니다.'
+    ],
+    same: [
+      '2026년 병오년의 뜨거운 기운이 당신의 에너지와 잘 맞아 시너지를 내는 한 해예요. 비슷한 결의 에너지가 만나 안정적이면서도 활기찬 흐름을 만들어낼 거예요.',
+    ]
+  };
+
+  var firstTexts = {
+    good: ['상반기는 새로운 시작과 만남이 활발한 시기예요. 1~2월에 세운 계획이 3~4월에 가시화되고, 5~6월에는 기대하지 못한 좋은 소식이 찾아올 수 있어요. 적극적으로 행동하는 만큼 좋은 결과가 따라올 거예요.'],
+    bad: ['상반기는 조금 버거운 상황이 이어질 수 있어요. 1~3월에는 인내심이 필요하고, 4~6월에 접어들면서 조금씩 안정을 찾아갈 거예요. 서두르지 말고 차근차근 나아가는 것이 중요해요.'],
+    neutral: ['상반기는 안정적으로 흘러가는 편이에요. 큰 변화보다 지금 하고 있는 일에 집중하면 좋은 흐름이 이어질 거예요. 3월 이후 좋은 기회가 찾아올 수 있으니 눈을 열어두세요.'],
+    same: ['상반기 전반적으로 안정적인 흐름이 예상돼요. 평소 루틴을 잘 유지하면서 중요한 결정을 내리기에 좋은 시기예요.']
+  };
+
+  var secondTexts = {
+    good: ['하반기는 올 한 해의 성과가 결실로 나타나는 시기예요. 7~8월에 에너지가 최고조에 달하고, 9~10월에는 중요한 변화가 생길 수 있어요. 11~12월에는 한 해를 마무리하며 내년을 위한 준비를 시작해보세요.'],
+    bad: ['하반기는 상반기보다 훨씬 나아지는 흐름이에요. 7~9월에 막혔던 일들이 풀리기 시작하고, 10~12월에는 뜻밖의 기회가 찾아올 수 있어요. 포기하지 않고 버텨온 것이 빛을 발할 거예요.'],
+    neutral: ['하반기는 조금 더 활발한 움직임이 예상돼요. 9~10월에 좋은 인연이나 기회가 찾아올 수 있으니 적극적으로 행동해보세요. 연말에는 한 해를 돌아보며 감사함을 느낄 수 있을 거예요.'],
+    same: ['하반기도 전반적으로 안정적이에요. 10월 이후 새로운 변화의 바람이 불 수 있으니 유연하게 대처하는 것이 좋아요.']
+  };
+
+  var carefulTexts = {
+    good: ['올해는 너무 많은 것을 동시에 하려는 욕심을 조심하세요. 좋은 기운이 넘치다 보면 과욕이 생길 수 있어요. 하나씩 집중하는 것이 결국 더 많은 것을 이루는 길이에요.'],
+    bad: ['올해는 감정적인 판단과 충동적인 행동을 조심하세요. 어렵다고 느껴질 때일수록 주변의 조언을 구하고 신중하게 결정하는 것이 중요해요. 건강 관리도 소홀히 하지 마세요.'],
+    neutral: ['올해는 너무 안주하려는 마음을 조심하세요. 편안함 속에서 성장의 기회를 놓칠 수 있어요. 작은 도전이라도 꾸준히 시도해보는 것이 올 한 해를 풍성하게 만들어줄 거예요.'],
+    same: ['올해는 변화를 두려워하는 마음을 조심하세요. 익숙한 것만 고집하다 보면 새로운 기회를 놓칠 수 있어요.']
+  };
+
+  var keywordTexts = {
+    good: ['도전 · 성장 · 열정 · 새로운 시작'],
+    bad: ['인내 · 내실 · 신중함 · 준비'],
+    neutral: ['균형 · 꾸준함 · 안정 · 성실'],
+    same: ['시너지 · 안정 · 조화 · 발전']
+  };
+
+  function pick(obj, key) {
+    var arr = obj[key] || obj['neutral'];
+    return arr[seed % arr.length];
+  }
+
+  return {
+    general: pick(generalTexts, dayRelation),
+    first: pick(firstTexts, dayRelation),
+    second: pick(secondTexts, dayRelation),
+    careful: pick(carefulTexts, dayRelation),
+    keyword: pick(keywordTexts, dayRelation)
+  };
+}
+
 function getFortune() {
   var bd = document.getElementById('birthday').value.trim().replace(/-/g,'');
   var bt = document.getElementById('birthtime').value;
@@ -547,6 +650,14 @@ function getFortune() {
         document.getElementById('score-bar').style.width = fortune.score + '%';
       }, 200);
 
+      // 연간 운세
+      var yearly = generateYearlyFortune(saju, year, month, day);
+      document.getElementById('y-general').textContent = yearly.general;
+      document.getElementById('y-first').textContent = yearly.first;
+      document.getElementById('y-second').textContent = yearly.second;
+      document.getElementById('y-careful').textContent = yearly.careful;
+      document.getElementById('y-keyword').textContent = yearly.keyword;
+
       // 운세 텍스트
       document.getElementById('f-general').textContent = fortune.general;
       document.getElementById('f-relation').textContent = fortune.relation;
@@ -586,6 +697,17 @@ function getFortune() {
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('cta-btn').addEventListener('click', getFortune);
   document.getElementById('reset-btn').addEventListener('click', resetPage);
+  document.getElementById('yearly-btn').addEventListener('click', function() {
+    var yc = document.getElementById('yearly-card');
+    if (yc.style.display === 'none') {
+      yc.style.display = 'block';
+      this.textContent = '2026년 운세 닫기';
+      yc.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      yc.style.display = 'none';
+      this.textContent = '2026년 운세 보기';
+    }
+  });
 });
 
 function resetPage() {
